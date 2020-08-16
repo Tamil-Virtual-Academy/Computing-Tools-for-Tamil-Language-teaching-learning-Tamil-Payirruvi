@@ -1,0 +1,494 @@
+/**
+ *  Created on Jul 1, 2009 4:39:23 PM
+ */
+
+package peyarppu;
+
+import edu.stanford.nlp.ling.Label;
+import edu.stanford.nlp.trees.TypedDependency;
+import java.io.*;
+import java.util.*;
+import java.util.Formatter;
+import java.util.logging.*;
+import java.util.regex.*;
+import util.StringProcessor;
+
+/**
+ *
+ * @author R. Loganathan
+ */
+
+public class MorphTransferSystem {
+
+    Vector<MorphRule> morphrules = null;
+
+    public MorphTransferSystem() {
+        morphrules = new Vector<MorphRule>();       
+        loadMorphRules();
+    }
+
+    private void loadMorphRules() {
+       // System.out.println("Test Flow8 :MorphTransferSystem.loadMorphRules ");
+        try {
+            File file = new File("D:\\Translation/Peyarppu_1/data/MorphTransfer.rules");
+            BufferedReader br = null;
+            InputStreamReader in;
+            String line;
+            int numrules=0;
+            if (!file.exists()) {
+                System.err.print("Error! Source-Target Morph Dictionary file not found");
+                System.exit(0);
+            }
+
+            in = new InputStreamReader(new FileInputStream(file), "UTF8");
+            br = new BufferedReader(in);
+
+            while((line = br.readLine()) != null) {                
+                line = Pattern.compile("(^\\s*|\\s*$)").matcher(line).replaceAll("");             
+                if(line.startsWith("#") || line.equals("")) {
+                    continue;
+                }
+                else if(line.startsWith("[") && line.endsWith("]")) {
+                    String sm = Pattern.compile("(^\\[\\s*|\\s*\\]$)").matcher(line).replaceAll("");
+                    sm = Pattern.compile("\\s+").matcher(sm).replaceAll("");
+
+                    while((line = br.readLine()) != null) {
+                        line = Pattern.compile("(^\\s*|\\s*$)").matcher(line).replaceAll("");
+                        if(line.startsWith("#") || line.equals("")) {
+                            continue;
+                        }
+                        else if(line.equals("{")) {
+                            String lw2 = null;
+                            String lpos2 = null;
+                            String lw1 = null;
+                            String lpos1 = null;
+                            String w = null;
+                            String pos = null;
+                            String rw1 = null;
+                            String rpos1 = null;
+                            String rw2 = null;
+                            String rpos2 = null;
+                            Vector<Dependency> deprules = new Vector<Dependency>();
+                            String reln = null;
+                            String gov = null;
+                            String dep = null;
+
+                            while((line = br.readLine()) != null) {
+                                line = Pattern.compile("(^\\s*|\\s*$)").matcher(line).replaceAll("");
+                                if(line.startsWith("#") || line.equals("")) {
+                                    continue;
+                                }
+                                else if(!line.equals("}")) 
+                                {
+                                    if(Pattern.matches("^(lw2|lpos2|lw1|lpos1|w|pos|rw1|rpos1|rw2|rpos2)\\s*\\=.*$", line)) 
+                                    {
+                                        /** Splitting morph.rule pos using = operator */
+                                        String[] fv = Pattern.compile("\\s*\\=\\s*").split(line);                                                                
+                                                                   
+                                        if(fv == null || fv.length !=2) {
+                                            System.out.println("Invalid feature:value assignment in '"+line+"'");
+                                            System.exit(0);
+                                        }
+                                        else if(fv.length ==2) {
+                                            fv[0] = Pattern.compile("\\s+").matcher(fv[0]).replaceAll("");
+                                            fv[1] = Pattern.compile("(^\\s*|\\s*$)").matcher(fv[1]).replaceAll("");
+                                            fv[1] = Pattern.compile("\\s+").matcher(fv[1]).replaceAll(" ");
+                                            if(fv[0].equals("lw2")) {
+                                                lw2 = fv[1];
+                                            }
+                                            if(fv[0].equals("lpos2")) {
+                                                lpos2 = fv[1];
+                                            }
+                                            if(fv[0].equals("lw1")) {
+                                                lw1 = fv[1];
+                                            }
+                                            if(fv[0].equals("lpos1")) {
+                                                lpos1 = fv[1];
+                                            }
+                                            if(fv[0].equals("w")) {
+                                                w = fv[1];
+                                            }
+                                            if(fv[0].equals("pos")) {
+                                                pos = fv[1];
+                                            }
+                                            if(fv[0].equals("rw2")) {
+                                                rw2 = fv[1];
+                                            }
+                                            if(fv[0].equals("rpos2")) {
+                                                rpos2 = fv[1];
+                                            }
+                                            if(fv[0].equals("rw1")) {
+                                                rw1 = fv[1];
+                                            }
+                                            if(fv[0].equals("rpos1")) {
+                                                rpos1 = fv[1];
+                                            }
+                                        }
+                                    }
+                                    else if(Pattern.matches("^(reln|gov|dep)\\s*\\=.*$", line)) 
+                                    {
+                                        String[] comps = Pattern.compile("\\s*,\\s*").split(line);
+                                          if(comps == null || comps.length != 3) 
+                                          {
+                                            System.out.println("Invalid dependency specification in '"+line+"'");
+                                            System.exit(0);
+                                          }
+                                          else if(comps.length==3) {
+                                            String[] gs1 = Pattern.compile("\\s*\\=\\s*").split(comps[0]);
+                                            String[] gs2 = Pattern.compile("\\s*\\=\\s*").split(comps[1]);
+                                            String[] gs3 = Pattern.compile("\\s*\\=\\s*").split(comps[2]);
+                                            if(gs1==null || gs2==null || gs3==null || gs1.length!=2 || gs2.length!=2 || gs3.length!=2) {
+                                                System.out.println("Invalid feature:value dependency specification in '"+line+"'");
+                                                System.exit(0);
+                                            }
+                                            if(gs1[0].equals("reln")) {
+                                                reln = gs1[1];
+                                            }
+                                            if(gs2[0].equals("gov")) {
+                                                gov = gs2[1];
+                                            }
+                                            if(gs3[0].equals("dep")) {
+                                                dep = gs3[1];
+                                            }
+                                            Dependency d = new Dependency(reln,gov,dep);                                            
+                                            reln = null;
+                                            gov = null;
+                                            dep = null;
+                                            deprules.add(d);
+                                        }
+                                    }
+                                    else {
+                                        System.out.println("Invalid feature:value assignment in '"+line+"'");
+                                        System.exit(0);
+                                    }
+                                }
+                                else if(line.equals("}")) {                                                                   
+                                      MorphRule mr = new MorphRule(sm,lw2,lpos2,lw1,lpos1,w,pos,rw1,rpos1,rw2,rpos2,deprules);                                    
+                                     morphrules.add(mr);
+                                    break;
+                                }
+                            }
+                            numrules +=1;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    System.out.println("Rule name should be in proper format. Usage: [source morph specification]");
+                    System.out.println("Error in line: "+line);
+                    System.exit(0);
+                }
+            }
+            ////////////////System.out.print(numrules+" rules"+ " loaded successfully\n");
+        } catch (IOException ex) {
+            Logger.getLogger(MorphTransferSystem.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+    }
+
+    public void printMorphTransferRules() {       
+        Formatter fmt = new Formatter();
+        fmt.format("%-20s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s", "Morph","-w2","-pos2","-w1","-pos1","w","pos","w1","pos1","w2","pos2", "dependency rules");
+        ////////////////////System.out.println(fmt);
+        for(int i=0; i<morphrules.size(); i++) {
+            morphrules.get(i).printRule();
+        }
+    }
+
+    public String[] identifyMorphFeatures(String[] words, List<Label> wpos, Vector<TypedDependency> tdvec) {       
+        int counter=0;       
+        String[] tmorphs = null;
+        tmorphs = new String[words.length];
+       
+        //Has feature:value pairs except "morph" in MorphRule Class
+        Map<String, String> s = new HashMap<String, String>(); 
+
+        boolean blw2=false;
+        boolean blw1=false;
+        boolean blpos2=false;
+        boolean blpos1=false;
+        boolean bw=false;
+        boolean bpos=false;
+        boolean brw1=false;
+        boolean brw2=false;
+        boolean brpos1=false;
+        boolean brpos2=false;
+        boolean bdeprules=false;
+
+          //  System.out.println("**********************Morpological Implementations*****************************");
+           // System.out.println("MorphRule Size :="+morphrules.size());                 
+                        
+        for(int i=0; i<words.length; i++) 
+        {
+            s.put("lw2", null);
+            s.put("lpos2", null);
+            s.put("lw1", null);
+            s.put("lpos1", null);
+            s.put("w",null);
+            s.put("pos",null);
+            s.put("rw2", null);
+            s.put("rpos2", null);
+            s.put("rw1", null);
+            s.put("rpos1", null);
+            //Assign current "word" and "pos"
+            s.put("w", words[i]);           
+            s.put("pos", wpos.get(i).toString());           
+            //System.out.println(words[i]+"==>"+wpos.get(i).toString());
+            if(i==1) 
+            {
+                s.put("lw1", words[i-1]);
+                s.put("lpos1",wpos.get(i-1).toString());
+            }
+            else if(i>=2) 
+            {
+                s.put("lw2", words[i-2]);
+                s.put("lpos2",wpos.get(i-2).toString());
+                s.put("lw1", words[i-1]);
+                s.put("lpos1",wpos.get(i-1).toString());
+            }
+            if(i+1==words.length-1) 
+            {
+                s.put("rw1", words[i+1]);
+                s.put("rpos1",wpos.get(i+1).toString());
+            }
+            else if(i+2 <words.length) 
+            {
+                s.put("rw1", words[i+1]);
+                s.put("rpos1",wpos.get(i+1).toString());
+                s.put("rw2", words[i+2]);
+                s.put("rpos2",wpos.get(i+2).toString());
+            }  
+            
+           /* Set keys = s.keySet();
+             for (Iterator itr = keys.iterator(); itr.hasNext(); ) 
+             {
+                 String key = (String) itr.next();
+                 String value = (String) s.get(key);   
+                 System.out.println("Key :="+key);
+                 System.out.println("Value :="+value);
+                 System.out.println("**********************Hash Map*****************************");
+             }*/
+            
+            
+            
+               for(int j=0; j<morphrules.size(); j++) 
+               {
+                blw2=true;
+                blw1=true;
+                blpos2=true;
+                blpos1=true;
+                bw=true;
+                bpos=true;
+                brw1=true;
+                brw2=true;
+                brpos1=true;
+                brpos2=true;
+                bdeprules=true;
+
+                MorphRule cr = morphrules.get(j);
+               /* System.out.println("*********************************"+j+"*****************************");
+                System.out.println("cr.lw1()"+cr.lw1());
+                System.out.println("cr.rw1()"+cr.rw1());
+                System.out.println("cr.rpos1()"+cr.rpos1());
+                System.out.println("cr.pos()"+cr.pos());
+                System.out.println("cr.lw2()"+cr.lw2());
+                System.out.println("cr.lpos1()"+cr.lpos1());
+                System.out.println("cr.lpos2()"+cr.lpos2());
+                System.out.println("*************************************************************");*/
+                               
+                blw2 = isContextPatternMatchesRule("lw2", cr, s);
+                //System.out.println("lw2-Resule"+blw2);
+                blpos2 = isContextPatternMatchesRule("lpos2", cr, s);
+                //System.out.println("lpos2-Resule"+blw2);
+               blw1 = isContextPatternMatchesRule("lw1", cr, s);
+               blpos1 = isContextPatternMatchesRule("lpos1", cr, s);
+               bw = isContextPatternMatchesRule("w", cr, s);
+               bpos = isContextPatternMatchesRule("pos", cr, s);
+               brw1 = isContextPatternMatchesRule("rw1", cr, s);
+               brpos1 = isContextPatternMatchesRule("rpos1", cr, s);
+               brw2 = isContextPatternMatchesRule("rw2", cr, s);
+               brpos2 = isContextPatternMatchesRule("rpos2", cr, s);
+                
+                 /*counter++;
+                 System.out.println("*****************isContextPatternMatchesRule :="+counter +"**********************************");
+                 System.out.println("blw2"+blw2);
+                 System.out.println("blpos2"+blpos2);
+                 System.out.println("blw1"+blw1);
+                 System.out.println("blpos1"+blpos1); 
+                 System.out.println("bw"+bw); 
+                 System.out.println("bpos"+bpos);
+                 System.out.println("brw1"+brw1);
+                 System.out.println("brpos1"+brpos1);
+                 System.out.println("brw2"+brw2);
+                 System.out.println("brpos2"+brpos2);                     
+                 System.out.println("***************************************************");*/
+
+                if(cr.getDepRules() == null || cr.getDepRules().size() ==0) 
+                {
+                    bdeprules = true;                   
+                }
+                else 
+                {
+                    for(int k=0; k<cr.getDepRules().size(); k++) 
+                    {                            
+                        bdeprules = isDepPatternMatches(words, wpos, i, tdvec, s, cr.getDepRules().get(k));
+                        if(!bdeprules) {
+                            break;
+                        }
+                    }
+                }
+                if(blw2 && blpos2 && blw1 && blpos1 && bw && bpos && brw1 &&  brpos1 && brw2 && brpos2 && bdeprules) 
+                {
+                    if(tmorphs[i] == null) 
+                    { 
+                        tmorphs[i] = cr.morph();
+                        System.out.println("i : =>" +words[i]);
+                        System.out.println("cr.morph() : =>" +cr.morph());
+                    }
+                }
+            }
+            if(tmorphs[i] == null) {
+                tmorphs[i] = "ROOT";
+            }
+        }
+        return tmorphs;
+    }
+
+    private boolean isContextPatternMatchesRule(String f, MorphRule mr, Map<String, String>s) 
+    {   
+                 
+         boolean iscpmatches=false;
+         String p;
+         //System.out.println("f := " +f);
+        // System.out.println("s.get(f) := " +s.get(f));
+        // System.out.println("mr.getValueForFeature(f) := " +mr.getValueForFeature(f));
+
+        if(mr.getValueForFeature(f) != null && s.get(f) == null) {
+            //System.out.println("Morp != null and Hash word == null");
+            iscpmatches=false;
+            return iscpmatches;
+        }
+        else if(mr.getValueForFeature(f) == null && s.get(f) != null) {
+            //System.out.println("Morp == null and Hash word != null");
+            iscpmatches=true;
+            return iscpmatches;
+        }
+        else if(mr.getValueForFeature(f) == null && s.get(f) == null) {
+           // System.out.println("Morp == null and Hash word == null");
+            iscpmatches=true;
+            return iscpmatches;
+        }
+        else if(mr.getValueForFeature(f) != null && s.get(f) != null) {
+           
+            //System.out.println("lpos2--------->"+s.get(f));
+            
+            if(Pattern.matches("^\\!\\s*\\(.*\\)$", mr.getValueForFeature(f))) 
+            {
+                //System.out.println("f :=>"+f);
+               // System.out.println("mr.getValueForFeature(f) :=>"+mr.getValueForFeature(f));
+                String tmp = Pattern.compile("(^\\!\\s*\\(|\\)$)").matcher(mr.getValueForFeature(f)).replaceAll("");
+               // System.out.println("tmp"+tmp);                        
+                 p = "^("+tmp+")$";    
+                 //System.out.println("p"+p); 
+                 //System.out.println("s.get(f) :="+s.get(f));
+                
+                  if(!Pattern.matches(p,s.get(f))) 
+                  {
+                    iscpmatches = true;
+                    return iscpmatches;
+                  }
+                  else 
+                  {
+                    iscpmatches = false;
+                    return iscpmatches;
+                  }
+            }
+            // Check for other patterns
+            else 
+            {
+                  p = "^("+mr.getValueForFeature(f)+")$";
+                  if(Pattern.matches(p,s.get(f)))
+                  {
+                   // System.out.println("True-Matches");
+                    iscpmatches = true;
+                    return iscpmatches;
+                 }
+                else 
+                  {
+                   // System.out.println("False-Matches");
+                    iscpmatches = false;
+                    return iscpmatches;
+                }
+            }
+        }
+        return iscpmatches;
+    }
+
+    private boolean isDepPatternMatches(String[] words, List<Label> pos, int inc, Vector<TypedDependency> tdvec, Map<String, String> s, Dependency d) {
+       
+        boolean isdeppmatches=false;
+        boolean igchkneeded=false;
+        boolean idchkneeded=false;
+
+        int dgind=-1;
+        int ddind=-1;
+
+        String dreln = d.getReln();
+        String dgov = d.getGov();
+        String ddep = d.getDep();
+        
+        
+        if(dgov.equals("<w>")) {
+            igchkneeded = true;
+            dgov = words[inc];
+            dgind = inc+1;
+        }
+        if(ddep.equals("<w>")) {
+            idchkneeded = true;
+            ddep = words[inc];
+            ddind = inc+1;
+        }
+        
+        String dgovpt = "^("+dgov+")$";
+        String ddeppt = "^("+ddep+")$";        
+               
+        for(int i=0; i<tdvec.size(); i++) {
+
+            String reln = tdvec.get(i).reln().toString();
+            String gov = tdvec.get(i).gov().toString();
+            String dep = tdvec.get(i).dep().toString();
+            int govindex = StringProcessor.getIndexFromIndexedWord(gov);
+            int depindex = StringProcessor.getIndexFromIndexedWord(dep);
+            String govword = StringProcessor.getWordFromIndexedWord(gov);
+            String depword = StringProcessor.getWordFromIndexedWord(dep);
+
+            if(dreln.equals(reln)) {
+                if(Pattern.matches(dgovpt, govword) && Pattern.matches(ddeppt, depword)) {
+                    if(igchkneeded && idchkneeded) {
+                        if((dgind == govindex) && (ddind == depindex)) {
+                            isdeppmatches = true;
+                            return isdeppmatches;
+                        }
+                    }
+                    else if(!igchkneeded && idchkneeded) {
+                        if(ddind == depindex) {
+                            isdeppmatches = true;
+                            return isdeppmatches;
+                        }
+                    }
+                    else if(igchkneeded && !idchkneeded) {
+                        if(dgind == govindex) {
+                            isdeppmatches = true;
+                            return isdeppmatches;
+                        }
+                    }
+                }
+            }
+        }
+        return isdeppmatches;
+    }
+
+    public static void main(String[] args) {
+        MorphTransferSystem mt = new MorphTransferSystem();
+        mt.printMorphTransferRules();
+    }
+}

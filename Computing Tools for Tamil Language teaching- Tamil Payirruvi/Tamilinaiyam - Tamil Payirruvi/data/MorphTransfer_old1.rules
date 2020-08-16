@@ -1,0 +1,203 @@
+#Rule1 : I came here yesterday
+[VERB_PAST_STEM+PNG+fv]
+{
+	lw1 = !(not)
+	rw1 = !(not)
+	rpos1 = !(VB.*)
+	pos = VBD
+}
+
+# Rule 2  : I met my friend
+[ROOT+ACC]
+{
+	pos = NNP|NNS|NN|DT|PRP
+	reln = dobj, gov= .* , dep = <w> 
+}
+
+# Rule 3
+# Example : Ram went to Chennai
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_to, gov=.*, dep=<w>
+}
+
+# Rule 4
+# Example  : Ram met Ravana at the airport
+[ROOT+LOC]
+{
+	pos = NNP|NNS|NN
+	reln = prep_at, gov=.*, dep=<w>     
+}
+# Rule 5
+# Example : Ram did|do|does not meet Ravana .
+[VERBINF+NEGillai] 
+{
+	lw2 = did|do|does
+	lpos2 = VB.*
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = d.*
+}
+# Rule 5.1
+# Example : Ram should not meet Ravana .
+[VERBINF+NEGkootathu] 
+{
+	lw2 = should 
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = should 
+}
+# Rule 5.2
+# Example : Ram must not meet Ravana .
+[VERBINF+NEGkootathu] 
+{
+	lw2 = must
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = must
+}
+
+
+# Rule 5.3
+# Example : Ram could not meet Ravana .
+[VERBINF+NEGmudiathu] 
+{
+	lw2 =  could
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = could
+}
+# Rule 5.4
+# Example : Ram shall not meet Ravana .
+[VERBINF+NEGmattu+PNG+fv] 
+{
+	lw2 =  shall
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = shall
+}
+# Rule 5.5
+# Example : Ram will not meet Ravana .
+[VERBINF+NEGmattu+PNG+fv] 
+{
+	lw2 =  will
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = will
+}
+# Rule 5.6
+# Example : Ram might / may not meet Ravana .
+[VERBINF+NEGmattu+PNG+fv] 
+{
+	lw2 =  m.*
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = m.*
+}
+
+# Rule 5.7
+# Example : Ram would not meet Ravana .
+[VERBINF+NEGmattu+PNG+fv] 
+{
+	lw2 =  would
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = would
+}
+
+# Rule 5.8
+# Example : Ram can not meet Ravana .
+[VERBINF+NEGmudiathu] 
+{
+	lw2 =  can
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = can
+}
+
+# Rule 6
+# Example  : Ram met Ravana in the airport
+[ROOT+LOC]
+{
+	pos = NNP|NNS|NN
+	reln = prep_in, gov=.*, dep=<w>
+}
+
+
+# Rule 7
+# Example  : I gave her a book
+[ROOT+DAT]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = iobj, gov=.*, dep=<w>
+}
+
+# Rule 8
+# Example  : He came from chennai
+[ROOT+ABL]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_from, gov=.*, dep=<w>
+}
+
+# Rule 9
+# Example  : This is for my friend
+[ROOT+BEN]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_for, gov=.*, dep=<w>
+}
+
+
+# Rule 10
+# Example  : Book of my friend.
+[ROOT+GEN]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_of, gov=.*, dep=<w>
+}
+
+
+# Rule 11
+# Example  : Work done by my father / brother / friend
+[ROOT+INS]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_by , gov=.*, dep=<w>
+}
+
+# Rule 12
+# Example  : I went to market with my father.
+[ROOT+SOC]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_with, gov=.*, dep=<w>
+}
+
+
+
+
+
+
+
+
+
+

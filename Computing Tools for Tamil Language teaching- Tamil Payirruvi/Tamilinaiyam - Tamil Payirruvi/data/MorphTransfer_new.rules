@@ -1,0 +1,362 @@
+#Rule 1 : I come 
+[VERB_PRE_STEM+PNG+fv]
+{
+  pos = VBZ|VBP
+  #pos=!(VBD)|(VBN)     
+  depPos= NNP|NNS|NN|DT|PRP|FW
+  lw1=!(will)|(not)|(never)|(might)|(may)|(would)|(shall)|(is)
+  #rw1=!(for)
+  reln = nsubj, gov=<w> , dep =.*
+}
+#Rule 2 : I came 
+[VERB_PAST_STEM+PNG+fv]
+{	
+	pos = VBD|VBN 
+     #rw1=!(after)|(before)
+     depPos= NNP|NNS|NN|DT|PRP
+     lw1=!(not)|(has)|(have)|(had)
+     reln = nsubj, gov=<w> , dep =.*     
+}
+#Rule 3 : Ram will meet Ravana .
+[VERB_FUT_STEM+PNG+fv]
+{	 
+	lw1 =  shall |will |might |may |would
+     depPos= NNP|NNS|NN|DT|PRP
+	lpos1 = MD
+	lw1 = !(not)
+      pos = VB.*     
+	reln = aux, gov=<w>, dep=shall |will |might |may |would 
+}
+#Rule 4  : I met my friend
+[ROOT+ACC]
+{
+	pos = NNP|NN|NNS|DT|PRP
+	reln = dobj, gov= .* , dep = <w>
+}
+#Rule 4.1  : She glanced at him
+#[ROOT+ACC]
+#{
+	#pos = NNP|NN|NNS|DT|PRP
+	#reln = prep_at, gov= .* , dep = <w>
+#}
+#Rule 5
+#Example : Ram went to Chennai 
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|DT|PRP
+	reln = prep_to, gov=.*, dep = <w>
+}
+#Rule 6
+#Example  : Ram met Ravana at the airport
+[ROOT+LOC]
+{
+	pos = NNP|NN|NNS|JJ
+	reln = prep_at, gov=.*, dep = <w>
+}
+#Rule 7
+#Example : Ram did|do|does not meet Ravana .
+[VERBINF+NEGillai] 
+{
+	lw2 = did |do |does
+	lpos2 = VB.*
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = d.*
+}
+#Rule 7.1
+#Example : He has not come.
+[VERBPAST+rukka+NEGillai] 
+{
+	lw2 = has |have |had
+	lpos2 = VB.*
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = h.*
+}
+#Rule 7.2
+#Example : He have come.
+[VERB_TVPR+rukki+PNG+fv] 
+{
+	lw1 = have    
+	lpos1 = VB.*
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = have 
+}
+#Rule 7.2.1
+#Example : He has come.
+[VERB_TVPR+rukki+PNG+fv] 
+{
+	lw1 = has   
+	lpos1 = VB.*
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = has
+}
+
+#Rule 7.3
+#Example : He had come.
+[VERB_TVPR+ruW+PNG+fv] 
+{
+	lw1 = had 
+	lpos1 = VB.*
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = had
+}
+
+
+#Rule 8
+#Example : Ram should | must not meet Ravana .
+[VERBINF+NEGkootathu] 
+{
+	lw2 = should |must 
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = should |must
+}
+#Rule 9
+#Example : Ram could | can not meet Ravana .
+[VERBINF+NEGmudiathu] 
+{
+	lw2 =  could |can
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = could |can
+}
+#Rule 10
+#Example : Ram shall |will|might|may|would  not meet Ravana 
+[VERBINF+NEGmattu+PNG+fv] 
+{
+	lw2 =  shall |will |might |may |would
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not|never
+	pos = VB.*	
+	reln = aux	, gov =<w>, dep = shall |will |might |may |would
+}
+#Rule 10.1
+#Example : Ram never meets Ravana 
+[VERBINF+NEGmattu+PNG+fv] 
+{	
+	lpos1 = RB
+	lw1 = never
+	pos = VB.*	
+	reln = neg, gov =<w>, dep = never
+}
+#Rule 11
+#Example  : Ram met Ravana in the airport
+[ROOT+LOC]
+{
+	pos = NNP|NNS|NN
+	reln = prep_in, gov=.*, dep = <w>
+}
+#Rule 12
+#Example  : He came from chennai
+[ROOT+ABL]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_from, gov=.*, dep = <w>
+}
+#Rule 13
+#Example  : This is for my friend
+[ROOT+BEN]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_for, gov=.*, dep =<w>
+}
+#Rule 14
+#Example  : Book of my friend.
+[ROOT+GEN]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_of, gov=.*, dep =<w>
+}
+#Rule 15
+#Example  : I went to market with my father 
+[ROOT+SOC]
+{
+	pos = PRP|NNP|NNS|NN  
+	reln = prep_with, gov=.*, dep=<w>
+}
+#Rule 16
+#Example  : I kept my pen above the table.
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_above, gov=.*, dep=<w>
+}
+#Rule 16.1
+#Example  : I kept my pen below the table.
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_below, gov=.*, dep=<w>
+}
+#Rule 17
+#Example  : I kept my pen under the table.
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_under, gov=.*, dep=<w>
+}
+
+# Rule 18
+# Example  : I kept my pen on the table.
+[ROOT+]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_on, gov=.*, dep=<w>
+}
+
+# Rule 19
+# Example  : Please come after my exams
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_after, gov=.*, dep=<w>
+}
+
+# Rule 19.1
+# Example  : Please come after my exams
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_before, gov=.*, dep=<w>
+}
+
+# Rule 20
+# Example  : I poured water into the pot
+[ROOT+INTO]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_into, gov=.*, dep=<w>
+}
+# Rule 20.1
+# Example  : I poured water into the pot
+[ROOT+INTO]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_inside, gov=.*, dep=<w>
+}
+
+# Rule 21
+# Example  : I wanted to go to chennai
+[VERBINF]
+{
+	pos = VB.*
+	reln = mark, gov=<w>, dep=to |for
+}
+# Rule 22
+# Example  : I am walking
+[VERBINGPRE+VP+KONDIRU+PNG+fv]
+{
+	pos = VBG
+      lw1=!(was)|(were)
+	reln = aux, gov=<w>, dep=.*
+}
+# Rule 23
+# Example  : I was walking
+[VERBINGPAST+VP+KONDIRU+PNG+fv]
+{
+	pos = VBG     
+	reln = aux, gov=<w>, dep=was |were
+}
+
+# Rule 24
+# Example  : I gave her a book
+[ROOT+DAT]
+{
+	pos = PRP    
+	reln = iobj, gov=.*, dep=<w>
+}
+# Rule 24.1
+# Example  : She (is) a teacher
+[VERB_PRE_STEM+PNG+fv]
+{
+	pos = VBZ    
+     rw1 = !(not)
+	reln = cop, gov=.*, dep=<w>
+}
+# Rule 24.1.1
+# Example  : She is not a teacher
+[VERBINF+NEGillai] 
+{     
+	pos = VBZ  
+     lpos1 =  NNP|NNS|NN|DT|PRP  
+     rw1 = (not)
+     reln = cop, gov=.*, dep=<w>
+}
+# Rule 24.2
+# Example  : She was a teacher
+[VERB_PAST_STEM+PNG+fv]
+{
+	pos = VBD    
+	reln = cop, gov=.*, dep=<w>
+}
+# Rule 24.3
+# Example  : She will be a teacher
+[VERB_FUT_STEM+PNG+fv]
+{	     	
+	reln = cop, gov=.*, dep=<w>	
+}
+# Rule 25
+# Example  : She is a (teacher)
+[ROOT+ADVS]
+{
+	pos = NN|JJ    
+	reln = cop, gov=<w>, dep=.*
+}
+# Rule 26
+# Example  : he died because of cancer
+[ROOT+BECAUSE]
+{
+	pos = NN|JJ    
+	reln = prep_because, gov=.*, dep=<w>
+}
+# Rule 27
+# Example  : he died because of cancer
+[ROOT+AROUND]
+{
+	pos =  NNP|NNS|NN|DT|PRP  
+	reln =advmod, gov=<w>, dep=.*
+}
+# Rule 28
+# Example  : The snake will die within two hours
+[ROOT+WITHIN]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_within, gov=.*, dep=<w>
+}
+# Rule 29
+# Example  : She likes walking
+[VERBINF]
+{
+	pos = VBG
+	reln = xcomp,gov=likes, dep=<w>
+}
+# Rule 29.1
+# Example  : She likes walking
+[ACTIONVERB+PP+KONDU]
+{
+	pos = VBG
+	reln = xcomp,gov=walks|enjoys, dep=<w>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

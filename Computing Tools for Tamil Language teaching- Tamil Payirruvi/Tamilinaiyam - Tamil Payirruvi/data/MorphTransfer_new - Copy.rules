@@ -1,0 +1,221 @@
+#Rule 1 : I come 
+[VERB_PRE_STEM+PNG+fv]
+{
+	  pos = VB|VBZ|VBP|VBN
+       pos=!(VBD)     
+       depPos= NNP|NNS|NN|DT|PRP|FW
+       lw1=!(will)|(not)|(cant)|(can't)|(done)|(never)|is
+       lw2=!(will)|(until)
+       reln = nsubj, gov=<w> , dep =.*
+}
+#Rule 1.1 : I come 
+[VERB_PRE_STEM+PNG+fv]
+{
+	  pos = VB|VBZ|VBP
+       pos=!(VBD)|(VBN)     
+       depPos= NNP|NNS|NN|DT|PRP|FW
+       #lw1=!(will)|(not)|(cant)|(can't)|(done)|(never)
+       #lw2=!(will)|(until)
+       reln = xcomp, gov=.* , dep =<w>
+}
+#Rule 1.2 : I come 
+[VERB_PRE_STEM+PNG+fv]
+{
+	  pos = VB|VBZ|VBP
+       pos=!(VBD)|(VBN)     
+       depPos= NNP|NNS|NN|DT|PRP|FW
+       lw1=!(will)|(not)|(cant)|(can't)|(done)|(never)
+       #lw2=!(will)|(until)
+       reln = dep, gov=.* , dep =<w>
+}
+#Rule 2 : I came 
+[VERB_PAST_STEM+PNG+fv]
+{	
+	pos = VBD
+     #rw1=!(after)|(before)
+     depPos= NNP|NNS|NN|DT|PRP
+     reln = nsubj, gov=<w> , dep =.*     
+}
+#Rule 3 : Ram will meet Ravana .
+[VERB_FUT_STEM+PNG+fv]
+{	 
+	lw1 =  shall |will |might |may |would
+     depPos= NNP|NNS|NN|DT|PRP
+	lpos1 = MD
+	lw1 = !(not)
+      pos = VB.*     
+	reln = aux, gov=<w>, dep=shall |will |might |may |would 
+}
+#Rule 4  : I met my friend
+[ROOT+ACC]
+{
+	pos = NNP|NNS|NN|DT|PRP
+	reln = dobj, gov= .* , dep = <w>
+}
+#Rule 5
+#Example : Ram went to Chennai 
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|DT|PRP
+	reln = prep_to, gov=.*, dep = <w>
+}
+#Rule 6
+#Example  : Ram met Ravana at the airport
+[ROOT+LOC]
+{
+	pos = NNP|NNS|NN
+	reln = prep_at, gov=.*, dep = <w>
+}
+#Rule 7
+#Example : Ram did|do|does not meet Ravana .
+[VERBINF+NEGillai] 
+{
+	lw2 = did |do |does
+	lpos2 = VB.*
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = d.*
+}
+#Rule 8
+#Example : Ram should | must not meet Ravana .
+[VERBINF+NEGkootathu] 
+{
+	lw2 = should |must 
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = should |must
+}
+#Rule 9
+#Example : Ram could | can not meet Ravana .
+[VERBINF+NEGmudiathu] 
+{
+	lw2 =  could |can
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not
+	pos = VB.*	
+	reln = aux, gov =<w>, dep = could |can
+}
+#Rule 10
+#Example : Ram shall |will|might|may|would  not meet Ravana 
+[VERBINF+NEGmattu+PNG+fv] 
+{
+	lw2 =  shall |will |might |may |would
+	lpos2 = MD
+	lpos1 = RB
+	lw1 = not|never
+	pos = VB.*	
+	reln = aux	, gov =<w>, dep = shall |will |might |may |would
+}
+#Rule 10.1
+#Example : Ram never meet Ravana 
+[VERBINF+NEGmattu+PNG+fv] 
+{	
+	lpos1 = RB
+	lw1 = never
+	pos = VB.*	
+	reln = neg, gov =<w>, dep = never
+}
+#Rule 11
+#Example  : Ram met Ravana in the airport
+[ROOT+LOC]
+{
+	pos = NNP|NNS|NN
+	reln = prep_in, gov=.*, dep = <w>
+}
+#Rule 12
+#Example  : He came from chennai
+[ROOT+ABL]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_from, gov=.*, dep = <w>
+}
+#Rule 13
+#Example  : This is for my friend
+[ROOT+BEN]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_for, gov=.*, dep = <w>
+}
+#Rule 14
+#Example  : Book of my friend.
+[ROOT+GEN]
+{
+	pos = PRP|NNP|NNS|NN
+	reln = prep_of, gov=.*, dep = <w>
+}
+#Rule 15
+#Example  : I went to market with my father 
+[ROOT+SOC]
+{
+	pos = PRP|NNP|NNS|NN  
+	reln = prep_with, gov=.*, dep=<w>
+}
+#Rule 16
+#Example  : I kept my pen above.
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_above, gov=.*, dep=<w>
+}
+#Rule 16.1
+#Example  : I kept my pen below the table.
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_below, gov=.*, dep=<w>
+}
+#Rule 17
+#Example  : I kept my pen under the table.
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_under, gov=.*, dep=<w>
+}
+
+# Rule 18
+# Example  : I kept my pen on the table.
+[ROOT+]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_on, gov=.*, dep=<w>
+}
+
+# Rule 19
+# Example  : Please come after my exams
+[ROOT+DAT]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_after, gov=.*, dep=<w>
+}
+# Rule 20
+# Example  : I poured water into the pot
+[ROOT+INTO]
+{
+	pos = NNP|NNS|NN|PRP
+	reln = prep_into, gov=.*, dep=<w>
+}
+# Rule 20
+# Example  : wait here until i come
+#[ROOT+UNTIL]
+#{	     
+        #pos=VB.*
+        #reln = prep_until, gov=<w>, dep=.*        	   
+#}
+# Rule 21
+# Example  : Work done by my father / brother / friend
+[ROOT+INS]
+{  
+	pos = PRP|NNP|NNS|NN
+	reln = prep_by, gov=.*, dep = <w>
+}
+# Rule 22
+# Example  : We ask him to catch the bus
+[ROOT+INF]
+{  	
+	reln = mark, gov=.*, dep = <w>
+}
+
